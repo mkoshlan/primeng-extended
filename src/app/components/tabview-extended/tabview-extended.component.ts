@@ -5,6 +5,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {TabView} from "primeng/tabview";
+import {DomHandler} from "primeng/dom";
 
 @Component({
   selector: 'app-tabview-extended',
@@ -45,6 +46,7 @@ import {TabView} from "primeng/tabview";
     `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  styleUrls: ['./tabview-extended.css'],
   host: {
     'class': 'p-element'
   }
@@ -62,11 +64,22 @@ export class TabviewExtendedComponent extends TabView implements AfterViewInit{
       this.cd.detectChanges();
     }
   }
-  initTabs() {
+  override initTabs() {
     super.initTabs();
     this.cd.detectChanges();
-    super.updateInkBar();
+    this.updateInkBar();
     this.updateButtonStateExtended();
+  }
+
+  override updateInkBar() {
+    if (this.navbar) {
+      setTimeout(()=>{
+        let tabHeader = DomHandler.findSingle(this.navbar.nativeElement, 'li.p-highlight');
+        this.inkbar.nativeElement.style.width = DomHandler.getWidth(tabHeader) + 'px';
+        this.inkbar.nativeElement.style.left =  DomHandler.getOffset(tabHeader).left - DomHandler.getOffset(this.navbar.nativeElement).left + 'px';
+
+      },0)
+    }
   }
 
   ngAfterViewInit(): void {
